@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>PDF Link Finder</title>
+		<meta charset="utf-8">
+		<meta name="description" content="Clientside JavaScript application to find links in PDF files">
+		<meta name="keywords" content="PDF, JavaScript, href, links">
+		<script src="js/analysis.js"></script>
+		
+		<style>
+			table, th, td {
+				border: 1px solid black;
+				border-collapse: collapse;
+			}
+			th, td {
+				padding: 5px;
+			}
+			table tr:nth-child(odd)	{background-color:#ffffff;}
+			table tr:nth-child(even)	{background-color: #F5FAFA;}
+			table tr:nth-child(odd)	{background-color:#F5FAFA !important;}
+			table tr:nth-child(even)	{background-color:#ffffff !important;}
+			output {background-color: #F5FAFA;}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>PDF Link Finder</h1>
+		</header>
+		<main>
+			<p> Select a PDF file then press Analyze File button.</p>
+			<input type="file" accept=".pdf" id="fileSelector" multiple /> &nbsp;&nbsp;
+			<button type="button" onclick="scanFile('fileSelector')">Analyze File</button> <br/>
+			<output for="fileSelector" id="selectedFiles"></output>
+			
+			<div id="resultSection">
+				<h2>Results</h2>				
+				<table id="results">
+					<tr style="background-color:#ffffff !important;">
+						<th>File Name</th>						
+						<th>Link</th>						
+					</tr>
+				</table>				
+			</div>
+		</main>
+		
+		<script id="pdf-js" src="js/pdf.js"></script>
+		<script>
+			function handleFileSelect(evt) {
+				var files = evt.target.files; // FileList object
+			
+				// files is a FileList of File objects. List some properties.
+				var output = [];
+				for (var i = 0, f; f = files[i]; i++) {
+				output.push('<li>', escape(f.name), '</li>');
+				}
+				document.getElementById('selectedFiles').innerHTML = '<ul>' + output.join('') + '</ul>';
+			}
+			
+			document.getElementById('fileSelector').addEventListener('change', handleFileSelect, false);
+		</script>
+	</body>
+</html>
