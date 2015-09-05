@@ -10,9 +10,9 @@ protocol prefixes.
 
 TODO List:
 - Clean up L&F
--- Add paging when more than 100 links are returned 
--- Fix how items are appended to the table to make railroading consistent
--- Alter the boarder behavior on rows when reporting on particular files
+  - Add paging when more than 100 links are returned 
+  - Fix how items are appended to the table to make railroading consistent
+  - Alter the boarder behavior on rows when reporting on particular files
 - Add Sorting Behavior by File Name
 - Change results to be displayed after all files have been analyzed 
 - Validate links which have a provided protocol
