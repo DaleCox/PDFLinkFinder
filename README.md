@@ -11,7 +11,9 @@ protocol prefixes and I'm hitting CORS issues inconsistantly as well, may have t
 TODO List:
 - Clean up L&F
   - Add paging when more than 100 links are returned 
+  - Consider using bootstrap 
 - Add Sorting Behavior by File Name
 - Change results to be displayed after all files have been analyzed 
 - Make link validation more consistant
 - Add a trimming option for instance I'm picking up the char ')' and '.' in some results
+- Explore matching on '://'

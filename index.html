@@ -27,7 +27,11 @@
 			<h1>PDF Link Finder</h1>
 		</header>
 		<main>
-			<p> Select a PDF file then press Analyze File button.</p>
+			<p> Select a PDF file then press Analyze File button.<br/>
+				The Status column will indicate if the link is good, any color other than Green should probably be investigated. <br/>
+				My test sets have had some weird encoding which I've extended the application to extract as I've found them.<br/>
+				Valid links which show a status of NA may indicate a Redirect is occuring. 			
+			</p>
 			<input type="file" accept=".pdf" id="fileSelector" multiple /> &nbsp;&nbsp;
 			<button type="button" onclick="scanFile('fileSelector')">Analyze File</button> <br/>
 			<output for="fileSelector" id="selectedFiles"></output>
