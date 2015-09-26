@@ -37,7 +37,8 @@
 				<table id="results">
 					<tr style="background-color:#ffffff !important;">
 						<th>File Name</th>						
-						<th>Link</th>						
+						<th>Link</th>
+						<th>Status</th>						
 					</tr>
 				</table>				
 			</div>
@@ -54,6 +55,8 @@
 				output.push('<li>', escape(f.name), '</li>');
 				}
 				document.getElementById('selectedFiles').innerHTML = '<ul>' + output.join('') + '</ul>';
+				
+				document.getElementById("results").innerHTML =tableDefault;
 			}
 			
 			document.getElementById('fileSelector').addEventListener('change', handleFileSelect, false);
