@@ -205,25 +205,30 @@ function getLinkStatusClient(link){
 
 function getLinkStatusServer(linkArray){
 	var promise = new Promise( function (resolve, reject) {
-		var request = new XMLHttpRequest();
-		request.open('POST', serverUrl, true);
-		request.setRequestHeader('Content-Type', 'application/json');
-		request.onerror = function () {
-			console.log("error in server communication");			
+		//filter out empty requests
+		if(linkArray.length == 0)
 			resolve([]);
-		};
-		request.onreadystatechange = function ()  {
-			if(request.readyState == 4){
-				if(request.status == 200){
-					console.log('Status ',request.responseText);//Debug
-					var statusArray = JSON.parse(request.responseText);
-					resolve(statusArray);
-				}else
-					resolve([]);
-			}
-		};
-		var postBody = JSON.stringify({url:linkArray});
-		request.send(postBody);
+		else{	
+			var request = new XMLHttpRequest();
+			request.open('POST', serverUrl, true);
+			request.setRequestHeader('Content-Type', 'application/json');
+			request.onerror = function () {
+				console.log("error in server communication");			
+				resolve([]);
+			};
+			request.onreadystatechange = function ()  {
+				if(request.readyState == 4){
+					if(request.status == 200){
+						console.log('Status ',request.responseText);//Debug
+						var statusArray = JSON.parse(request.responseText);
+						resolve(statusArray);
+					}else
+						resolve([]);
+				}
+			};
+			var postBody = JSON.stringify({url:linkArray});
+			request.send(postBody);
+		}
 	});
 	return promise;
 }

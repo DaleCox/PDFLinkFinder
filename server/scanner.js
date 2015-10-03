@@ -39,13 +39,16 @@ app.post('/', function (req, res) {
       
     var promiseArray = [];
     for(var i =0; i < req.body.url.length; i++){
-      promiseArray.push(GetRequestNoRedirects(testVal[i]));
+      promiseArray.push(GetRequestNoRedirects(req.body.url[i]));
     }
+    
+    //console.log('Testing status.');//debug
     Q.all(promiseArray).then(
       function (statusArray) {
+        //console.log('Status Array ',statusArray);//debug
         var retVal = [];
-        for(var j =0; j < testVal.length; j++){
-          retVal.push({url:testVal[j],status:statusArray[j]});
+        for(var j =0; j < req.body.url.length; j++){
+          retVal.push({url:req.body.url[j],status:statusArray[j]});
         }
         res.send(retVal);
       },
@@ -57,7 +60,8 @@ app.post('/', function (req, res) {
     res.status(400).send('Malformed post body');
 });
 
-var server = app.listen(3000, function () {
+var port = process.env.PORT || 3000;
+var server = app.listen(port, function () {
   var host = server.address().address;
   var port = server.address().port;
 
