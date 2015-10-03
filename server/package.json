@@ -1,0 +1,21 @@
+{
+  "name": "url_scanner",
+  "description": "Returns list of status for supplied links",
+  "version": "0.8.0",
+  "author": {
+    "name": "Dale Cox",
+    "email": " "
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaleCox/PDFLinkFinder.git"
+  },
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "q": "^1.4.1",
+    "superagent": "^1.4.0"
+  }
+}

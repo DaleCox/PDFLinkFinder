@@ -5,6 +5,10 @@ var tableDefault = '<tbody><tr style="background-color:#ffffff !important;">';
 	tableDefault += '</tr>';
 	tableDefault += '</tbody>';
 
+var serverUrl = 'http://localhost:3000/';
+var checkStatus = true;
+var sendToServer = true;
+var customMatchValues = [];
 
 function scanFile(fileElementID){
 	var fileElement = document.getElementById(fileElementID);
@@ -52,33 +56,39 @@ function readFileFindLinks(selectedFile){
 			var re1 = /(https?):\S*/gim;//match on http or https stop at next space
 			findLinks(AnalysisObj, re1);
 			
-			var promiseArray =[];
-			for(var i=0; i < AnalysisObj.Links.length; ++i){
-				promiseArray.push(getLinkStatus(AnalysisObj.Links[i]));
-			}
-			Promise.all(promiseArray).then(function(values){
-				for(var j=0; j < values.length; ++j){
-					//console.log(values[j]);//Debug
-					AnalysisObj.LinkStatus.push(values[j]);
+			if(checkStatus){
+				if(sendToServer){
+					getLinkStatusServer(AnalysisObj.Links).then(
+						function(values){
+							for(var i=0; i < values.length; ++i){
+								//because order is not guaranteed loop through found links and set values;
+								for(var j=0; j < AnalysisObj.Links.length; ++j){
+									if(AnalysisObj.Links[j] == values[i].url)
+										AnalysisObj.LinkStatus[j] = values[i].status;
+								}
+							}
+							findOther(AnalysisObj);
+							return logAndWrite(AnalysisObj, parseStart);
+						}
+					);					
+				}else{
+					var promiseArray =[];
+					for(var i=0; i < AnalysisObj.Links.length; ++i){
+						promiseArray.push(getLinkStatusClient(AnalysisObj.Links[i]));
+					}
+					Promise.all(promiseArray).then(function(values){
+						for(var j=0; j < values.length; ++j){
+							//console.log(values[j]);//Debug
+							AnalysisObj.LinkStatus.push(values[j]);
+						}	
+						findOther(AnalysisObj);					
+						return logAndWrite(AnalysisObj, parseStart);
+					});
 				}
-				
-				var re2 = /(hjp):\S*/gim; //strange prefix or protocol that replaced http or https in my test documents
-				findLinks(AnalysisObj, re2);
-				
-				var re2b = /(hYp):\S*/gim; //strange prefix or protocol that replaced http or https in my test documents
-				findLinks(AnalysisObj, re2b);
-				
-				var re3 = /\s(www)\S*/gim;//grap web address with no prefix 
-				findLinks(AnalysisObj, re3);
-				
-				AnalysisObj.TimeToParse = new Date() - parseStart;
-				console.log(AnalysisObj);//Debug
-				
-				
-				writeToClient(AnalysisObj);
-				return AnalysisObj;
-			});
-			
+			}else{
+				findOther(AnalysisObj);
+				return logAndWrite(AnalysisObj, parseStart);
+			}
 			
 		});
 	};
@@ -173,21 +183,67 @@ function writeToClient(AnalysisObj){
 }
 
 //Based off guidence from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-function getLinkStatus(link){
+function getLinkStatusClient(link){
 	var promise = new Promise( function (resolve, reject) {
 		var request = new XMLHttpRequest();
 		request.open('GET', link, true);
 		//request.setRequestHeader('Content-Type', 'text/html');
 		request.onerror = function () {
+			console.log("error in validator, Most likely a redirect");			
 			resolve(request.status);
 		};
 		request.onreadystatechange = function ()  {
 			if(request.readyState == 4){
-				//console.log('Status ',request.status);//Debug
+				console.log('Status ',request.status);//Debug
 				resolve(request.status);
 			}
 		};
 		request.send();
 	});
 	return promise;
+}
+
+function getLinkStatusServer(linkArray){
+	var promise = new Promise( function (resolve, reject) {
+		var request = new XMLHttpRequest();
+		request.open('POST', serverUrl, true);
+		request.setRequestHeader('Content-Type', 'application/json');
+		request.onerror = function () {
+			console.log("error in server communication");			
+			resolve([]);
+		};
+		request.onreadystatechange = function ()  {
+			if(request.readyState == 4){
+				if(request.status == 200){
+					console.log('Status ',request.responseText);//Debug
+					var statusArray = JSON.parse(request.responseText);
+					resolve(statusArray);
+				}else
+					resolve([]);
+			}
+		};
+		var postBody = JSON.stringify({url:linkArray});
+		request.send(postBody);
+	});
+	return promise;
+}
+
+function findOther(AnalysisObj){
+	var re2 = /(hjp):\S*/gim; //strange prefix or protocol that replaced http or https in my test documents
+	findLinks(AnalysisObj, re2);
+	
+	var re2b = /(hYp):\S*/gim; //strange prefix or protocol that replaced http or https in my test documents
+	findLinks(AnalysisObj, re2b);
+	
+	var re3 = /\s(www)\S*/gim;//grap web address with no prefix 
+	findLinks(AnalysisObj, re3);
+}
+
+function logAndWrite(AnalysisObj, parseStart){
+	AnalysisObj.TimeToParse = new Date() - parseStart;
+	console.log(AnalysisObj);//Debug
+	
+	
+	writeToClient(AnalysisObj);
+	return AnalysisObj;
 }

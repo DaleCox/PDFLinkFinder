@@ -6,7 +6,8 @@ extract the URL or URL like matches returning the results in tabular format.
 
 My original intention was to also validate the URLs that were provided to see
 if they were still valid. This has proved problematic as not all URL have 
-protocol prefixes and I'm hitting CORS issues inconsistantly as well, may have to switch to JSONP.
+protocol prefixes and I've addressed the CORS issues by creating a Node.js server component, scanner works great now. 
+
 
 TODO List:
 - Clean up L&F
